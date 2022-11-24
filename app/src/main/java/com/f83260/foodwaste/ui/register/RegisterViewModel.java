@@ -1,4 +1,4 @@
-package com.f83260.foodwaste.ui.login;
+package com.f83260.foodwaste.ui.register;
 
 import android.util.Patterns;
 
@@ -7,47 +7,51 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.f83260.foodwaste.R;
-import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.Result;
+import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.model.LoggedInUser;
+import com.f83260.foodwaste.ui.login.LoggedInUserView;
 
-public class LoginViewModel extends ViewModel {
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+public class RegisterViewModel extends ViewModel {
+
+    private MutableLiveData<RegisterFormState> loginFormState = new MutableLiveData<>();
+    private MutableLiveData<RegisterResult> loginResult = new MutableLiveData<>();
     private UserRepository loginRepository;
 
-    LoginViewModel(UserRepository loginRepository) {
+    RegisterViewModel(UserRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 
-    LiveData<LoginFormState> getLoginFormState() {
+    LiveData<RegisterFormState> getRegisterFormState() {
         return loginFormState;
     }
 
-    LiveData<LoginResult> getLoginResult() {
+    LiveData<RegisterResult> getRegisterResult() {
         return loginResult;
     }
 
-    public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+
+    // TODO: use dto here
+    public void register(String firstName, String lastName, String phoneName, String username, String password){
+        // TODO
+        Result<LoggedInUser> result = loginRepository.register(firstName, lastName, phoneName, username, password);
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
+            loginResult.setValue(new RegisterResult(new LoggedInUserView(data.getDisplayName())));
         } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
+            loginResult.setValue(new RegisterResult(R.string.login_failed));
         }
     }
 
     public void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
+            loginFormState.setValue(new RegisterFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
+            loginFormState.setValue(new RegisterFormState(null, R.string.invalid_password));
         } else {
-            loginFormState.setValue(new LoginFormState(true));
+            loginFormState.setValue(new RegisterFormState(true));
         }
     }
 

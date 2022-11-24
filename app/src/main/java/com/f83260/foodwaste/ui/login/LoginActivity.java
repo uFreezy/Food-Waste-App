@@ -25,6 +25,7 @@ import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.common.SharedPreferenceManager;
 import com.f83260.foodwaste.databinding.ActivityLoginBinding;
 import com.f83260.foodwaste.service.UserService;
+import com.f83260.foodwaste.ui.register.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -48,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText usernameEditText = binding.username;
         final EditText passwordEditText = binding.password;
         final Button loginButton = binding.login;
+        final Button registerButton = binding.register;
         final ProgressBar loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(this, loginFormState -> {
@@ -72,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                 showLoginFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
+                // TODO: move
                 SharedPreferenceManager.setUserName(LoginActivity.this, loginResult.getSuccess().getDisplayName());
                 updateUiWithUser(loginResult.getSuccess());
             }
@@ -113,6 +116,11 @@ public class LoginActivity extends AppCompatActivity {
             loginViewModel.login(usernameEditText.getText().toString(),
                     passwordEditText.getText().toString());
 
+        });
+
+        registerButton.setOnClickListener(v ->{
+            Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(i);
         });
 
     }

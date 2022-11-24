@@ -1,29 +1,31 @@
 package com.f83260.foodwaste.data;
 
+import com.f83260.foodwaste.common.SharedPreferenceManager;
 import com.f83260.foodwaste.data.model.LoggedInUser;
+import com.f83260.foodwaste.ui.login.LoginActivity;
 
 /**
  * Class that requests authentication and user information from the remote data source and
  * maintains an in-memory cache of login status and user credentials information.
  */
-public class LoginRepository {
+public class UserRepository {
 
-    private static volatile LoginRepository instance;
+    private static volatile UserRepository instance;
 
-    private LoginDataSource dataSource;
+    private AuthDataSource dataSource;
 
     // If user credentials will be cached in local storage, it is recommended it be encrypted
     // @see https://developer.android.com/training/articles/keystore
     private LoggedInUser user = null;
 
     // private constructor : singleton access
-    private LoginRepository(LoginDataSource dataSource) {
+    private UserRepository(AuthDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public static LoginRepository getInstance(LoginDataSource dataSource) {
+    public static UserRepository getInstance(AuthDataSource dataSource) {
         if (instance == null) {
-            instance = new LoginRepository(dataSource);
+            instance = new UserRepository(dataSource);
         }
         return instance;
     }
@@ -41,6 +43,7 @@ public class LoginRepository {
         this.user = user;
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
+
     }
 
     public Result<LoggedInUser> login(String username, String password) {
@@ -50,5 +53,9 @@ public class LoginRepository {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
+    }
+
+    public Result<LoggedInUser> register(String firstName, String lastName, String phoneName, String username, String password){
+        return dataSource.register(firstName, lastName, phoneName, username, password);
     }
 }

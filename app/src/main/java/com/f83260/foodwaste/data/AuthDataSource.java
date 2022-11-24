@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
-public class LoginDataSource {
+public class AuthDataSource {
 
     private final UserService userService = new UserService();
 
@@ -27,6 +27,17 @@ public class LoginDataSource {
 
     public void logout() {
         // TODO: revoke authentication
+    }
+
+    public Result<LoggedInUser> register(String firstName, String lastName, String phoneName, String username, String password){
+        try {
+            if (userService.checkIfUsernameExists(username))
+                return new Result.Error(new IOException("User with username " + username + "already exits."));
+            userService.register(username,password,firstName, lastName, phoneName);
+            return new Result.Success<>(userService.login(username, password));
+        } catch (Exception e){
+            return new Result.Error(new IOException("Error registering in", e));
+        }
     }
 
 }

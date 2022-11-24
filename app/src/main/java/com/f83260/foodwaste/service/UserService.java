@@ -18,19 +18,9 @@ import java.util.UUID;
 
 public class UserService {
 
-    private final String API_BASE_URL = "https://api.jsonbin.io/v3";
-    private final String API_KEY = "$2b$10$Vl72g5hPKSe53zEGDI3GhO6CeXJ2WP/vK2vKwnvaq1u3D8jve/T/u";
-    private final String LOGGED_USERS = "/b/635fa63365b57a31e6a81495";
-
-    private MessageDigest digester;
-
-    public UserService() {
-        try {
-            this.digester = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final String API_BASE_URL = "https://api.jsonbin.io/v3";
+    private static final String API_KEY = "$2b$10$Vl72g5hPKSe53zEGDI3GhO6CeXJ2WP/vK2vKwnvaq1u3D8jve/T/u";
+    private static final String LOGGED_USERS = "/b/635fa63365b57a31e6a81495";
 
     public static void seedUsers() {
         UserService service = new UserService();
@@ -76,6 +66,21 @@ public class UserService {
         } else {
             return null;
         }
+    }
+
+    public boolean checkIfUsernameExists(String username){
+        JSONArray users = this.fecthUsers();
+
+        try {
+            for (int i = 0; i < users.length(); i++) {
+                if (users.getJSONObject(i).getString("email").equals(username))
+                    return true;
+            }
+        } catch (JSONException ex){
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
     public boolean register(String email, String password, String firstName, String lastName, String phoneNumber) {
