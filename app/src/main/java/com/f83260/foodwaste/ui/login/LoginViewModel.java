@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.f83260.foodwaste.R;
-import com.f83260.foodwaste.data.LoginRepository;
+import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.Result;
 import com.f83260.foodwaste.data.model.LoggedInUser;
 
@@ -15,9 +15,9 @@ public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
+    private UserRepository loginRepository;
 
-    LoginViewModel(LoginRepository loginRepository) {
+    LoginViewModel(UserRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 

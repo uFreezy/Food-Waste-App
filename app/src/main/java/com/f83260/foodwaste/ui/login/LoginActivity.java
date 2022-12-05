@@ -5,26 +5,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.f83260.foodwaste.MainActivity;
 import com.f83260.foodwaste.R;
-import com.f83260.foodwaste.common.SharedPreferenceManager;
 import com.f83260.foodwaste.databinding.ActivityLoginBinding;
 import com.f83260.foodwaste.service.UserService;
+import com.f83260.foodwaste.ui.register.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -48,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText usernameEditText = binding.username;
         final EditText passwordEditText = binding.password;
         final Button loginButton = binding.login;
+        final Button registerButton = binding.register;
         final ProgressBar loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(this, loginFormState -> {
@@ -72,7 +69,6 @@ public class LoginActivity extends AppCompatActivity {
                 showLoginFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
-                SharedPreferenceManager.setUserName(LoginActivity.this, loginResult.getSuccess().getDisplayName());
                 updateUiWithUser(loginResult.getSuccess());
             }
             setResult(Activity.RESULT_OK);
@@ -115,14 +111,17 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
+        registerButton.setOnClickListener(v ->{
+            Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(i);
+        });
+
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
         String welcome = getString(R.string.welcome) + model.getDisplayName();
 
-        String value = "Hello world";
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        i.putExtra("key", value);
         startActivity(i);
 
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();

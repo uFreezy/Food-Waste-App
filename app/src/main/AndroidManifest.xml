@@ -5,8 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.
-   READ_GSERVICES" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.    READ_GSERVICES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -22,21 +21,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodWaste"
         tools:targetApi="33">
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="false"
+            android:label="LoginActivity" />
+        <activity
+            android:name=".ui.register.RegisterActivity"
+            android:exported="false"
+            android:label="@string/title_activity_register" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <!-- Necessary for apps that target Android 9.0 or higher -->
-        <!--        <uses-library android:name="org.apache.http.legacy" android:required="false" />-->
-        <activity
-            android:name=".ui.login.LoginActivity"
-            android:exported="false"
-            android:label="@string/title_activity_login">
-
-        </activity>
+            android:value="@integer/google_play_services_version" /> <!-- Necessary for apps that target Android 9.0 or higher -->
+        <!-- <uses-library android:name="org.apache.http.legacy" android:required="false" /> -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -45,6 +45,7 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
