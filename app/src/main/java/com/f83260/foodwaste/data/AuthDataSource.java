@@ -18,7 +18,6 @@ public class AuthDataSource {
         try {
             // TODO: Add user session => remember logged users
             LoggedInUser user = userService.login(username, password);
-
             return new Result.Success<>(user);
         } catch (Exception e) {
             return new Result.Error(new IOException("Error logging in", e));

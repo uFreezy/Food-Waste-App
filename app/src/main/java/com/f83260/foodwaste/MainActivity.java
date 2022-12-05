@@ -15,7 +15,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.ui.AppBarConfiguration;
 
-import com.f83260.foodwaste.common.SharedPreferenceManager;
+import com.f83260.foodwaste.data.AuthDataSource;
+import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.databinding.ActivityMainBinding;
 import com.f83260.foodwaste.service.LocationService;
 import com.f83260.foodwaste.ui.login.LoginActivity;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (SharedPreferenceManager.getUserName(MainActivity.this).length() == 0) {
+        if(!UserRepository.getInstance(new AuthDataSource()).isLoggedIn()){
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
         }

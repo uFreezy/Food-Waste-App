@@ -1,8 +1,6 @@
 package com.f83260.foodwaste.data;
 
-import com.f83260.foodwaste.common.SharedPreferenceManager;
 import com.f83260.foodwaste.data.model.LoggedInUser;
-import com.f83260.foodwaste.ui.login.LoginActivity;
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -27,11 +25,12 @@ public class UserRepository {
         if (instance == null) {
             instance = new UserRepository(dataSource);
         }
+
         return instance;
     }
 
-    public boolean isLoggedIn() {
-        return user != null;
+    public static boolean isLoggedIn() {
+        return instance.user != null;
     }
 
     public void logout() {
@@ -56,6 +55,12 @@ public class UserRepository {
     }
 
     public Result<LoggedInUser> register(String firstName, String lastName, String phoneName, String username, String password){
-        return dataSource.register(firstName, lastName, phoneName, username, password);
+        Result<LoggedInUser> user = dataSource.register(firstName, lastName, phoneName, username, password);
+
+        if (user instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) user).getData());
+        }
+
+        return user;
     }
 }

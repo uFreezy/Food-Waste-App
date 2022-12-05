@@ -11,55 +11,74 @@ import com.f83260.foodwaste.data.Result;
 import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.model.LoggedInUser;
 import com.f83260.foodwaste.ui.login.LoggedInUserView;
+import com.f83260.foodwaste.ui.register.dto.RegistrationFromDto;
 
 
 public class RegisterViewModel extends ViewModel {
 
-    private MutableLiveData<RegisterFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<RegisterResult> loginResult = new MutableLiveData<>();
-    private UserRepository loginRepository;
+    private MutableLiveData<RegisterFormState> registerFormState = new MutableLiveData<>();
+    private MutableLiveData<RegisterResult> registerResult = new MutableLiveData<>();
+    private UserRepository userRepository;
 
     RegisterViewModel(UserRepository loginRepository) {
-        this.loginRepository = loginRepository;
+        this.userRepository = loginRepository;
     }
 
     LiveData<RegisterFormState> getRegisterFormState() {
-        return loginFormState;
+        return registerFormState;
     }
 
     LiveData<RegisterResult> getRegisterResult() {
-        return loginResult;
+        return registerResult;
     }
 
 
     // TODO: use dto here
     public void register(String firstName, String lastName, String phoneName, String username, String password){
-        // TODO
-        Result<LoggedInUser> result = loginRepository.register(firstName, lastName, phoneName, username, password);
+        Result<LoggedInUser> result = userRepository.register(firstName, lastName, phoneName, username, password);
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new RegisterResult(new LoggedInUserView(data.getDisplayName())));
+            registerResult.setValue(new RegisterResult(new LoggedInUserView(data.getDisplayName())));
         } else {
-            loginResult.setValue(new RegisterResult(R.string.login_failed));
+            registerResult.setValue(new RegisterResult(R.string.login_failed));
         }
     }
 
-    public void loginDataChanged(String username, String password) {
-        if (!isUserNameValid(username)) {
-            loginFormState.setValue(new RegisterFormState(R.string.invalid_username, null));
-        } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new RegisterFormState(null, R.string.invalid_password));
-        } else {
-            loginFormState.setValue(new RegisterFormState(true));
+    public void registerDataChanged(RegistrationFromDto form) {
+        RegisterFormState formState = new RegisterFormState(true);
+
+        if (!isNameValid(form.getFirstNameEditText().getText().toString())){
+            formState.setFirstNameError(R.string.invalid_first_name);
+            formState.setDataValid(false);
         }
+        if (!isNameValid(form.getLastNameEditText().getText().toString())){
+            formState.setLastNameError(R.string.invalid_last_name);
+            formState.setDataValid(false);
+        }
+        if (!isUserNameValid(form.getUsernameEditText().getText().toString())) {
+            formState.setUsernameError(R.string.invalid_username);
+            formState.setDataValid(false);
+        }
+        if (!isPasswordValid(form.getPasswordEditText().getText().toString())) {
+            formState.setPasswordError(R.string.invalid_password);
+            formState.setDataValid(false);
+        }
+
+        registerFormState.setValue(formState);
     }
+
+    private boolean isNameValid(String name){
+        return !name.trim().isEmpty();
+    }
+
 
     // A placeholder username validation check
     private boolean isUserNameValid(String username) {
         if (username == null) {
             return false;
         }
+
         if (username.contains("@")) {
             return Patterns.EMAIL_ADDRESS.matcher(username).matches();
         } else {

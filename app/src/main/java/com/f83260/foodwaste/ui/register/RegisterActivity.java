@@ -6,10 +6,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.StringRes;
@@ -18,15 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.f83260.foodwaste.MainActivity;
 import com.f83260.foodwaste.R;
-import com.f83260.foodwaste.common.SharedPreferenceManager;
-import com.f83260.foodwaste.databinding.ActivityLoginBinding;
+import com.f83260.foodwaste.data.AuthDataSource;
+import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.databinding.ActivityRegisterBinding;
-import com.f83260.foodwaste.service.UserService;
 import com.f83260.foodwaste.ui.login.LoggedInUserView;
-import com.f83260.foodwaste.ui.login.LoginActivity;
+import com.f83260.foodwaste.ui.register.dto.RegistrationFromDto;
 
 public class RegisterActivity extends AppCompatActivity {
-
     private RegisterViewModel registerViewModel;
     private ActivityRegisterBinding binding;
 
@@ -40,27 +34,15 @@ public class RegisterActivity extends AppCompatActivity {
         registerViewModel = new ViewModelProvider(this, new RegisterViewModelFactory())
                 .get(RegisterViewModel.class);
 
-        final EditText firstNameEditText = binding.firstName;
-        final EditText lastNameEditText = binding.lastName;
-        final EditText phoneNameEditText = binding.phone;
-        final EditText usernameEditText = binding.username;
-        final EditText passwordEditText = binding.password;
-        final Button registerButton = binding.register;
-        final ProgressBar loadingProgressBar = binding.loading;
+        RegistrationFromDto form = new RegistrationFromDto(binding);
 
-        // TODO: Add for the others
         registerViewModel.getRegisterFormState().observe(this, registerFormState -> {
             if (registerFormState == null) {
                 return;
             }
-            registerButton.setEnabled(registerFormState.isDataValid());
+            form.getRegisterButton().setEnabled(registerFormState.isDataValid());
 
-            if (registerFormState.getUsernameError() != null) {
-                usernameEditText.setError(getString(registerFormState.getUsernameError()));
-            }
-            if (registerFormState.getPasswordError() != null) {
-                passwordEditText.setError(getString(registerFormState.getPasswordError()));
-            }
+            this.digestErrors(registerFormState, form);
         });
 
         registerViewModel.getRegisterResult().observe(this, registerResult -> {
@@ -68,14 +50,12 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            loadingProgressBar.setVisibility(View.GONE);
+            form.getLoadingProgressBar().setVisibility(View.GONE);
 
             if (registerResult.getError() != null) {
                 showRegisterFailed(registerResult.getError());
             }
             if (registerResult.getSuccess() != null) {
-                SharedPreferenceManager
-                        .setUserName(RegisterActivity.this, registerResult.getSuccess().getDisplayName());
                 updateUiWithUser(registerResult.getSuccess());
             }
             setResult(Activity.RESULT_OK);
@@ -97,24 +77,21 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                registerViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                registerViewModel.registerDataChanged(form);
             }
         };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-
+        form.getUsernameEditText().addTextChangedListener(afterTextChangedListener);
+        form.getPasswordEditText().addTextChangedListener(afterTextChangedListener);
 
         // clicked on the 'register' button
-        registerButton.setOnClickListener(v -> {
-            loadingProgressBar.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(), "Hello world", Toast.LENGTH_LONG).show();
+        form.getRegisterButton().setOnClickListener(v -> {
+            form.getLoadingProgressBar().setVisibility(View.VISIBLE);
 
-            registerViewModel.register(firstNameEditText.getText().toString(),
-                    lastNameEditText.getText().toString(),
-                    phoneNameEditText.getText().toString(),
-                    usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString());
+            registerViewModel.register(form.getFirstNameEditText().getText().toString(),
+                    form.getLastNameEditText().getText().toString(),
+                    form.getPhoneNameEditText().getText().toString(),
+                    form.getUsernameEditText().getText().toString(),
+                    form.getPasswordEditText().getText().toString());
 
         });
     }
@@ -130,5 +107,21 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(i);
 
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+    }
+
+    private void digestErrors(RegisterFormState formState, RegistrationFromDto form ){
+        // TODO: Add phone number
+        if (formState.getFirstNameError() != null){
+            form.getFirstNameEditText().setError(getString(formState.getFirstNameError()));
+        }
+        if (formState.getLastNameError() != null){
+            form.getLastNameEditText().setError(getString(formState.getLastNameError()));
+        }
+        if (formState.getUsernameError() != null) {
+            form.getUsernameEditText().setError(getString(formState.getUsernameError()));
+        }
+        if (formState.getPasswordError() != null) {
+            form.getPasswordEditText().setError(getString(formState.getPasswordError()));
+        }
     }
 }
