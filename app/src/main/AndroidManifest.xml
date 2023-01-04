@@ -22,13 +22,28 @@
         android:theme="@style/Theme.FoodWaste"
         tools:targetApi="33">
         <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:label="LoginActivity" />
         <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false"
-            android:label="@string/title_activity_register" />
+            android:label="@string/title_activity_register">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.login.LoginActivity" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -9,19 +9,18 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.navigation.ui.AppBarConfiguration;
 
 import com.f83260.foodwaste.data.AuthDataSource;
 import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.databinding.ActivityMainBinding;
 import com.f83260.foodwaste.ui.login.LoginActivity;
+import com.f83260.foodwaste.ui.settings.SettingsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -97,6 +96,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        // bind menus
+        binding.bottomNavigationView.setOnItemSelectedListener(i ->{
+            if(i.getTitle().equals("Settings")){
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            }
+            return true;
+        });
     }
 
     @Override

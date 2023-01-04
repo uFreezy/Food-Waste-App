@@ -2,6 +2,9 @@ package com.f83260.foodwaste.data;
 
 import com.f83260.foodwaste.data.model.LoggedInUser;
 import com.f83260.foodwaste.service.UserService;
+import com.f83260.foodwaste.ui.common.dto.UserDto;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -24,9 +27,6 @@ public class AuthDataSource {
         }
     }
 
-    public void logout() {
-        // TODO: revoke authentication
-    }
 
     public Result<LoggedInUser> register(String firstName, String lastName, String phoneName, String username, String password){
         try {
@@ -37,6 +37,22 @@ public class AuthDataSource {
         } catch (Exception e){
             return new Result.Error(new IOException("Error registering in", e));
         }
+    }
+
+    public Result<LoggedInUser> editProfile(UserDto userDto){
+        LoggedInUser updatedUser;
+        try {
+            updatedUser = userService.updateUser(userDto);
+        } catch ( JSONException e){
+            return new Result.Error(new IOException("Error updating profile", e));
+        }
+
+        // update logged in user info
+        if (updatedUser != null){
+            UserRepository.getInstance(new AuthDataSource()).setLoggedInUser(updatedUser);
+        }
+
+        return new Result.Success(updatedUser);
     }
 
 }

@@ -3,15 +3,17 @@ package com.f83260.foodwaste.service;
 import android.util.Base64;
 
 import com.f83260.foodwaste.common.RequestExecutor;
+import com.f83260.foodwaste.data.AuthDataSource;
+import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.model.LoggedInUser;
 import com.f83260.foodwaste.service.util.PasswordUtil;
+import com.f83260.foodwaste.ui.common.dto.UserDto;
+import com.f83260.foodwaste.ui.common.dto.UserProfileFormDto;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,37 +33,14 @@ public class UserService {
         }
     }
 
-    // TODO: Move
-    private static byte[] toByteArray(JSONArray array) {
-        byte[] bytes = new byte[array.length()];
-        for (int i = 0; i < array.length(); i++) {
-            try {
-                bytes[i] = (byte) (((int) array.get(i)) & 0xFF);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        Base64.encodeToString(bytes, Base64.DEFAULT);
-
-        return bytes;
-    }
-
     public LoggedInUser login(String username, String password) throws InterruptedException, JSONException {
-        JSONArray users = this.fecthUsers();
-        JSONObject user = null;
-
-        // Simple, but inefficient
-        for (int i = 0; i < users.length(); i++) {
-            if (users.getJSONObject(i).getString("email").equals(username)) {
-                user = users.getJSONObject(i);
-            }
-        }
+        JSONObject user = this.getUser(username);
 
         byte[] salt = Base64.decode(user.getString("salt"), Base64.DEFAULT);
         byte[] hash = Base64.decode(user.getString("hash"), Base64.DEFAULT);
 
         if (user != null && PasswordUtil.isExpectedPassword(password.toCharArray(), salt, hash)) {
-            return new LoggedInUser(user.getString("id"), user.getString("email"));
+            return new LoggedInUser(user.getString("id"),user.getString("first_name"),user.getString("last_name"),user.getString("phone_number"), user.getString("email"));
 
         } else {
             return null;
@@ -69,18 +48,81 @@ public class UserService {
     }
 
     public boolean checkIfUsernameExists(String username){
+        return getUser(username) != null;
+    }
+
+    private JSONObject getUser(String username){
         JSONArray users = this.fecthUsers();
 
         try {
+            // Simple, but inefficient
             for (int i = 0; i < users.length(); i++) {
-                if (users.getJSONObject(i).getString("email").equals(username))
-                    return true;
+                if (users.getJSONObject(i).getString("email").equals(username)) {
+                    return users.getJSONObject(i);
+                }
             }
-        } catch (JSONException ex){
+        } catch(JSONException ex){
             ex.printStackTrace();
         }
 
-        return false;
+        return null;
+    }
+
+    public LoggedInUser updateUser(UserDto userDto) throws JSONException{
+        JSONArray users = this.fecthUsers();
+
+        JSONObject user = null;
+
+        // Simple, but inefficient
+        for (int i = 0; i < users.length(); i++) {
+            if (users.getJSONObject(i).getString("email").equals(userDto.getUsername())) {
+                user =  users.getJSONObject(i);
+            }
+        }
+
+        if (user == null){
+            throw new IllegalArgumentException("user with username " + userDto.getUsername() + " doesn't exist.");
+        }
+
+        user.put("first_name", userDto.getFirstName())
+                .put("last_name",userDto.getLastName())
+                .put("phone_number", userDto.getPhone());
+
+
+        if (!userDto.getPass().isEmpty()){
+            byte[] salt = PasswordUtil.getNextSalt();
+            byte[] hash = PasswordUtil.hash(userDto.getPass().toCharArray(), salt);
+
+            user.put("salt", Base64.encodeToString(salt, Base64.DEFAULT))
+                    .put("hash", Base64.encodeToString(hash, Base64.DEFAULT));
+        }
+
+        String payload = "";
+        payload = new JSONObject()
+                .put("users", users).toString();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-MASTER-KEY", API_KEY);
+        RequestExecutor executor = new RequestExecutor(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
+
+        // TODO: Move this part in the executor itself
+        Thread thread = new Thread(executor);
+
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (executor.getStatusCode() == 200){
+            LoggedInUser updatedUser = new LoggedInUser(user.getString("id"),user.getString("first_name"),user.getString("last_name"),user.getString("phone_number"), user.getString("email"));
+            UserRepository.getInstance(new AuthDataSource()).setLoggedInUser(updatedUser);
+            return updatedUser;
+
+        } else {
+            throw new RuntimeException("failed to update user");
+        }
     }
 
     public boolean register(String email, String password, String firstName, String lastName, String phoneNumber) {
