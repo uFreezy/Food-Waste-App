@@ -1,6 +1,7 @@
 package com.f83260.foodwaste.data;
 
 import com.f83260.foodwaste.data.model.LoggedInUser;
+import com.f83260.foodwaste.ui.common.dto.UserDto;
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -33,12 +34,15 @@ public class UserRepository {
         return instance.user != null;
     }
 
-    public void logout() {
-        user = null;
-        dataSource.logout();
+    public LoggedInUser loggedUser(){
+        return instance.user;
     }
 
-    private void setLoggedInUser(LoggedInUser user) {
+    public void logout() {
+        user = null;
+    }
+
+    public void setLoggedInUser(LoggedInUser user) {
         this.user = user;
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
@@ -60,6 +64,12 @@ public class UserRepository {
         if (user instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) user).getData());
         }
+
+        return user;
+    }
+
+    public Result<LoggedInUser> updateProfile(UserDto userDto){
+        Result<LoggedInUser> user = dataSource.editProfile(userDto);
 
         return user;
     }

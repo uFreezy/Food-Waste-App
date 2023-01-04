@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.f83260.foodwaste.MainActivity;
@@ -35,6 +38,12 @@ public class RegisterActivity extends AppCompatActivity {
                 .get(RegisterViewModel.class);
 
         RegistrationFromDto form = new RegistrationFromDto(binding);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
 
         registerViewModel.getRegisterFormState().observe(this, registerFormState -> {
             if (registerFormState == null) {
@@ -94,6 +103,17 @@ public class RegisterActivity extends AppCompatActivity {
                     form.getPasswordEditText().getText().toString());
 
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // define the behaviour for the back arrow
+        if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void showRegisterFailed(@StringRes Integer errorString) {
