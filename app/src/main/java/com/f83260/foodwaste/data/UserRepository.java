@@ -46,7 +46,6 @@ public class UserRepository {
         this.user = user;
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
-
     }
 
     public Result<LoggedInUser> login(String username, String password) {
@@ -69,8 +68,6 @@ public class UserRepository {
     }
 
     public Result<LoggedInUser> updateProfile(UserDto userDto){
-        Result<LoggedInUser> user = dataSource.editProfile(userDto);
-
-        return user;
+        return dataSource.editProfile(userDto);
     }
 }

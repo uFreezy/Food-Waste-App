@@ -3,21 +3,35 @@ package com.f83260.foodwaste;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.Layout;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.f83260.foodwaste.data.AuthDataSource;
+import com.f83260.foodwaste.data.StoreRepository;
 import com.f83260.foodwaste.data.UserRepository;
+import com.f83260.foodwaste.data.model.Opportunity;
+import com.f83260.foodwaste.data.model.Store;
 import com.f83260.foodwaste.databinding.ActivityMainBinding;
 import com.f83260.foodwaste.ui.login.LoginActivity;
 import com.f83260.foodwaste.ui.settings.SettingsActivity;
@@ -36,16 +50,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.w3c.dom.Text;
+
+import java.time.Period;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private GoogleMap mGoogleMap;
     private LocationRequest mLocationRequest;
     private Marker mCurrLocationMarker;
     private ActivityMainBinding binding;
     private FusedLocationProviderClient mFusedLocationClient;
-    static int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     LocationCallback mLocationCallback = new LocationCallback() {
         @Override
@@ -59,14 +76,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mCurrLocationMarker.remove();
                 }
 
+
+
+                List<Store> stores = StoreRepository.getInstance(getApplicationContext()).getStores();
+
+                renderStoreMarkers(stores);
+
+
+                mGoogleMap.setOnMarkerClickListener(marker -> {
+                    // Open dialog window
+                    final Dialog dialog = new Dialog(MainActivity.this);
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setCancelable(true);
+
+                    View layoutInf = getLayoutInflater().inflate(R.layout.custom_dialog, null);
+                    LinearLayout layout = (LinearLayout)layoutInf.findViewById(R.id.custom_dialog);
+
+                    layout.findViewById(R.id.btnCancel).setOnClickListener(l ->{
+                        dialog.dismiss();
+                    });
+
+
+                    for (Store store : stores){
+                        renderOpportunities(layout, store.getOpportunities());
+                    }
+
+                    dialog.setContentView(layout);
+
+                    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                    lp.copyFrom(dialog.getWindow().getAttributes());
+
+                    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+
+                    dialog.show();
+                    dialog.getWindow().setAttributes(lp);
+
+                    return true;
+                });
+
                 // Place current location marker
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title("Current Position");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-
                 //move map camera
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
             }
@@ -98,8 +148,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         // bind menus
-        binding.bottomNavigationView.setOnItemSelectedListener(i ->{
-            if(i.getTitle().equals("Settings")){
+        binding.bottomNavigationView.setOnItemSelectedListener(i -> {
+            if (i.getTitle().equals("Settings")) {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             }
             return true;
@@ -157,12 +207,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new AlertDialog.Builder(this)
                         .setTitle("Location Permission Needed")
                         .setMessage("This app needs the Location permission, please accept to use location functionality")
-                        .setPositiveButton("OK", (dialogInterface, i) -> {
+                        .setPositiveButton("OK", (dialogInterface, i) ->
                             //Prompt the user once explanation has been shown
                             ActivityCompat.requestPermissions(MainActivity.this,
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    MY_PERMISSIONS_REQUEST_LOCATION);
-                        })
+                                    MY_PERMISSIONS_REQUEST_LOCATION)
+                        )
                         .create()
                         .show();
             } else {
@@ -171,6 +221,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
+        }
+    }
+
+    public void renderStoreMarkers(List<Store> stores){
+
+        for (Store store : stores) {
+            LatLng storeLoc = new LatLng(store.getLatitude(), store.getLongitude());
+
+            MarkerOptions markerOptions2 = new MarkerOptions();
+            markerOptions2.position(storeLoc);
+            markerOptions2.title(store.getName());
+            markerOptions2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            mGoogleMap.addMarker(markerOptions2);
+        }
+    }
+
+    public void renderOpportunities(LinearLayout parentLayout, List<Opportunity> opps){
+        for(Opportunity opp : opps){
+            View layoutInf2 = getLayoutInflater().inflate(R.layout.opportunity_template, null);
+            LinearLayout storeLayout = (LinearLayout)layoutInf2.findViewById(R.id.opportunity_template);
+
+            TextView productName = (TextView)storeLayout.findViewById(R.id.productName);
+            TextView timeLeft = (TextView)storeLayout.findViewById(R.id.timeLeft);
+
+            productName.setText(opp.getProductName());
+            timeLeft.setText("Added " + ((new Date().getTime() - opp.getCreatedAt().getTime()) / 1000 / 60 / 60 ) + " hours ago.");
+
+
+            parentLayout.addView(storeLayout);
         }
     }
 
