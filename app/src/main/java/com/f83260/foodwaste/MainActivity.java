@@ -10,20 +10,15 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.text.Layout;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -47,12 +42,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.w3c.dom.Text;
-
-import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private GoogleMap mGoogleMap;
     private LocationRequest mLocationRequest;
-    private Marker mCurrLocationMarker;
     private ActivityMainBinding binding;
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -71,17 +61,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (!locationList.isEmpty()) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-
-                if (mCurrLocationMarker != null) {
-                    mCurrLocationMarker.remove();
-                }
-
-
-
                 List<Store> stores = StoreRepository.getInstance(getApplicationContext()).getStores();
 
                 renderStoreMarkers(stores);
-
 
                 mGoogleMap.setOnMarkerClickListener(marker -> {
                     // Open dialog window
@@ -89,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setCancelable(true);
 
-                    View layoutInf = getLayoutInflater().inflate(R.layout.custom_dialog, null);
+                    View layoutInf = getLayoutInflater().inflate(R.layout.store_dialog, null);
                     LinearLayout layout = (LinearLayout)layoutInf.findViewById(R.id.custom_dialog);
 
                     layout.findViewById(R.id.btnCancel).setOnClickListener(l ->{
@@ -135,8 +117,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
