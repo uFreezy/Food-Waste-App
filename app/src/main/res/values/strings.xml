@@ -42,4 +42,6 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="edit_profile_label">Edit Profile</string>
+    <string name="register_activity_label">Register</string>
 </resources>
