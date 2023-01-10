@@ -44,7 +44,7 @@ public class RequestExecutor implements Runnable {
                 con.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
 
                 try (OutputStream os = con.getOutputStream()) {
-                    byte[] input = this.payload.toString().getBytes(StandardCharsets.UTF_8);
+                    byte[] input = this.payload.getBytes(StandardCharsets.UTF_8);
                     os.write(input, 0, input.length);
                 }
 
