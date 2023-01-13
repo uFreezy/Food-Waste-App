@@ -56,14 +56,40 @@ public class StoreRepository {
         List<Opportunity> opportunities = new ArrayList<>();
 
         while (cursor.moveToNext()) {
+            int opp_id =  cursor.getInt(cursor.getColumnIndexOrThrow("id"));
             String name = cursor.getString(cursor.getColumnIndexOrThrow("product_name"));
             boolean available = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndexOrThrow("is_available")));
             int sId = cursor.getInt(cursor.getColumnIndexOrThrow("store_id"));
             String createdAt = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
+            String userId = cursor.getString(cursor.getColumnIndexOrThrow("user_id"));
 
-            opportunities.add(new Opportunity(name, available, sId, createdAt));
+
+            opportunities.add(new Opportunity(opp_id, name, available, sId, createdAt, userId));
         }
         cursor.close();
         return opportunities;
+    }
+
+    public Opportunity reserveOpportunity(Opportunity opp, String userId){
+        String query = "UPDATE opportunities SET user_id = '" + userId+"' WHERE id = " + opp.getId();
+
+        DBManager mng = new DBManager(this.context);
+        mng.getReadableDatabase().execSQL(query);
+
+        opp.setUserClaimedId(userId);
+
+        return opp;
+
+    }
+
+    public Opportunity removeReservation(Opportunity opp){
+        String query = "UPDATE opportunities SET user_id = null WHERE id = " + opp.getId();
+
+        DBManager mng = new DBManager(this.context);
+        mng.getReadableDatabase().execSQL(query);
+
+        opp.setUserClaimedId(null);
+
+        return opp;
     }
 }

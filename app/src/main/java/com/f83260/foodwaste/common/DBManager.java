@@ -26,7 +26,8 @@ public class DBManager extends SQLiteOpenHelper {
                     "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n" +
                     "  product_name TEXT NOT NULL, quantity NUMERIC NOT NULL, \n" +
                     "  is_available INTEGER NOT NULL, created_at STRING NOT NULL, \n" +
-                    "  store_id INTEGER NOT NULL\n" +
+                    "  store_id INTEGER NOT NULL,\n" +
+                    "  user_id TEXT" +
                     ");\n"};
 
     private static final String[] SQL_DELETE_ENTRIES = {
@@ -49,23 +50,22 @@ public class DBManager extends SQLiteOpenHelper {
 
         List<String> oppSqls = new ArrayList<>();
 
-        int j = 1;
         String[] oppNames = {"tomatoes", "potatoes", "pizza", "cucumbers"};
-        for (String storeSql : storeSqls) {
-            int quant = new Random().nextInt(10);
-            SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-            String createdAt = format.format(new Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(new Random().nextInt(10))));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        Random randGen = new Random();
+
+        for (int i = 0; i < storeSqls.size(); i++) {
+            int quant = randGen.nextInt(10);
+            String createdAt = dateFormat.format(new Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(randGen.nextInt(10))));
 
             String oppSql = "";
-            for (int i = 0; i < 3; i++) {
-                oppSql = String.format("INSERT INTO opportunities (product_name, quantity, is_available, created_at, store_id) VALUES('%s',%s, 1,'%s', %s);", oppNames[new Random().nextInt(oppNames.length)], quant, createdAt, j);
+            for (int j = 0; j < 3; j++) {
+                oppSql = String.format("INSERT INTO opportunities (product_name, quantity, is_available, created_at, store_id) VALUES('%s',%s, 1,'%s', %s);", oppNames[randGen.nextInt(oppNames.length)], quant, createdAt, i+1);
             }
-
-            j++;
 
             oppSqls.add(oppSql);
         }
-
 
         for (String storeSql : storeSqls) {
             db.execSQL(storeSql);

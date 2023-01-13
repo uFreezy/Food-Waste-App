@@ -5,12 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Opportunity {
+    private int id;
     private String productName;
     private boolean isAvailable;
     private int storeId;
     private Date createdAt;
+    private String userClaimedId;
 
-    public Opportunity(String productName, boolean isAvailable, int storeId, String createdAtStr) {
+    public Opportunity(String productName, boolean isAvailable, int storeId, String createdAtStr, String userId) {
         this.productName = productName;
         this.isAvailable = isAvailable;
         this.storeId = storeId;
@@ -19,8 +21,21 @@ public class Opportunity {
         } catch (ParseException ex){
             ex.printStackTrace();
         }
+
+        this.userClaimedId = userId;
+    }
+    public Opportunity(int id, String productName, boolean isAvailable, int storeId, String createdAtStr, String userId) {
+        this(productName, isAvailable, storeId, createdAtStr, userId);
+        this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getProductName() {
         return productName;
@@ -52,5 +67,13 @@ public class Opportunity {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getUserClaimedId() {
+        return userClaimedId;
+    }
+
+    public void setUserClaimedId(String userClaimedId) {
+        this.userClaimedId = userClaimedId;
     }
 }

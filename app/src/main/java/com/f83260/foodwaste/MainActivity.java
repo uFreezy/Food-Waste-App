@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -54,6 +55,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMainBinding binding;
     private FusedLocationProviderClient mFusedLocationClient;
 
+    // not working
+    private  StoreRepository storeRepository;
+    private  UserRepository userRepository;
+
     LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (!locationList.isEmpty()) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                List<Store> stores = StoreRepository.getInstance(getApplicationContext()).getStores();
+                List<Store> stores = storeRepository.getStores();
 
                 renderStoreMarkers(stores);
 
@@ -74,10 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     View layoutInf = getLayoutInflater().inflate(R.layout.store_dialog, null);
                     LinearLayout layout = (LinearLayout)layoutInf.findViewById(R.id.custom_dialog);
 
-                    layout.findViewById(R.id.btnCancel).setOnClickListener(l ->{
-                        dialog.dismiss();
-                    });
-
+                    layout.findViewById(R.id.btnCancel).setOnClickListener(l -> dialog.dismiss());
 
                     for (Store store : stores){
                         renderOpportunities(layout, store.getOpportunities());
@@ -105,12 +107,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
+
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!UserRepository.getInstance(new AuthDataSource()).isLoggedIn()) {
+        storeRepository = StoreRepository.getInstance(getApplicationContext());
+        userRepository = UserRepository.getInstance(new AuthDataSource());
+
+        if (!userRepository.isLoggedIn()) {
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
         }
@@ -205,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void renderStoreMarkers(List<Store> stores){
-
         for (Store store : stores) {
             LatLng storeLoc = new LatLng(store.getLatitude(), store.getLongitude());
 
@@ -219,21 +224,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void renderOpportunities(LinearLayout parentLayout, List<Opportunity> opps){
         for(Opportunity opp : opps){
+            boolean isClaimed = opp.getUserClaimedId() != null;
+
+            if (isClaimed && !Objects.equals(opp.getUserClaimedId(), userRepository.loggedUser().getUserId()))
+                continue;
+
             View layoutInf2 = getLayoutInflater().inflate(R.layout.opportunity_template, null);
-            LinearLayout storeLayout = (LinearLayout)layoutInf2.findViewById(R.id.opportunity_template);
+            LinearLayout oppLayout = (LinearLayout)layoutInf2.findViewById(R.id.opportunity_template);
 
-            TextView productName = (TextView)storeLayout.findViewById(R.id.productName);
-            TextView timeLeft = (TextView)storeLayout.findViewById(R.id.timeLeft);
-
+            TextView productName = (TextView)oppLayout.findViewById(R.id.productName);
+            TextView addedAgoTime = (TextView)oppLayout.findViewById(R.id.addedAgoTime);
             productName.setText(opp.getProductName());
-            timeLeft.setText("Added " + ((new Date().getTime() - opp.getCreatedAt().getTime()) / 1000 / 60 / 60 ) + " hours ago.");
 
+            long addedAgoHours = ((new Date().getTime() - opp.getCreatedAt().getTime()) / 1000 / 60 / 60 );
+            String addedAgoMsg ="Added " + addedAgoHours + " hours ago.";
+            addedAgoTime.setText(addedAgoMsg);
 
-            parentLayout.addView(storeLayout);
+            if (isClaimed && opp.getUserClaimedId().equals(userRepository.loggedUser().getUserId())){
+                oppLayout.findViewById(R.id.Reserve).setVisibility(View.GONE);
+            }
+
+            // Listener for Reserve button
+            oppLayout.findViewById(R.id.Reserve).setOnClickListener(l ->{
+                storeRepository.reserveOpportunity(opp, userRepository.loggedUser().getUserId());
+                // Updates the UI with the new "Cancel" button
+                oppLayout.findViewById(R.id.Reserve).setVisibility(View.GONE);
+                oppLayout.findViewById(R.id.CancelReservation).setVisibility(View.VISIBLE);
+
+            });
+
+            // Listener for Cancel Reservation button
+            oppLayout.findViewById(R.id.CancelReservation).setOnClickListener(l ->{
+                storeRepository.removeReservation(opp);
+                // Updates the UI with the new "Cancel" button
+                oppLayout.findViewById(R.id.Reserve).setVisibility(View.VISIBLE);
+                oppLayout.findViewById(R.id.CancelReservation).setVisibility(View.GONE);
+            });
+
+            parentLayout.addView(oppLayout);
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -251,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             } else {
                 // permission denied, boo!
-                Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
     }

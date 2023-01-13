@@ -2,13 +2,12 @@ package com.f83260.foodwaste.service;
 
 import android.util.Base64;
 
-import com.f83260.foodwaste.common.RequestExecutor;
+import com.f83260.foodwaste.common.Request;
 import com.f83260.foodwaste.data.AuthDataSource;
 import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.model.LoggedInUser;
 import com.f83260.foodwaste.service.util.PasswordUtil;
 import com.f83260.foodwaste.ui.common.dto.UserDto;
-import com.f83260.foodwaste.ui.common.dto.UserProfileFormDto;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,7 +102,7 @@ public class UserService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("X-MASTER-KEY", API_KEY);
-        RequestExecutor executor = new RequestExecutor(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
+        Request executor = new Request(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
 
         // TODO: Move this part in the executor itself
         Thread thread = new Thread(executor);
@@ -163,7 +162,7 @@ public class UserService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("X-MASTER-KEY", API_KEY);
-        RequestExecutor executor = new RequestExecutor(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
+        Request executor = new Request(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
 
         // TODO: Move this part in the executor itself
         Thread thread = new Thread(executor);
@@ -185,7 +184,7 @@ public class UserService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("X-MASTER-KEY", API_KEY);
-        RequestExecutor executor = new RequestExecutor(API_BASE_URL + LOGGED_USERS, "GET", headers, null);
+        Request executor = new Request(API_BASE_URL + LOGGED_USERS, "GET", headers, null);
 
         // TODO: Move this part in the executor itself
         Thread thread = new Thread(executor);

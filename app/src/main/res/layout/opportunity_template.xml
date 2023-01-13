@@ -16,18 +16,26 @@
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/timeLeft"
+        android:id="@+id/addedAgoTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text="TextView" />
+        android:text="TextView"/>
 
     <Button
         android:id="@+id/Reserve"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:text="Reserve" />
 
+    <Button
+        android:id="@+id/CancelReservation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove Reservation"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"
+        android:backgroundTint="@android:color/holo_orange_dark"/>
 </LinearLayout>
