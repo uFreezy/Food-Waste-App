@@ -10,15 +10,15 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class RequestExecutor implements Runnable {
-    private String url;
-    private String requestMethod;
-    private Map<String, String> headers;
+public class Request implements Runnable {
+    private final String url;
+    private final Map<String, String> headers;
+    private final String payload;
+    private final String requestMethod;
     private JSONObject value;
-    private String payload;
     private Integer statusCode;
 
-    public RequestExecutor(String url, String requestMethod, Map<String, String> headers, String data) {
+    public Request(String url, String requestMethod, Map<String, String> headers, String data) {
         this.url = url;
         this.requestMethod = requestMethod;
         this.headers = headers;
@@ -28,16 +28,14 @@ public class RequestExecutor implements Runnable {
     @Override
     public void run() {
         try {
-            URL url = new URL(this.url);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            URL urlObj = new URL(this.url);
+            HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
             con.setRequestMethod(requestMethod);
             con.setRequestProperty("Accept", "application/json");
 
-
-            for (String key : this.headers.keySet()) {
-                con.setRequestProperty(key, this.headers.get(key));
+            for (Map.Entry<String, String> entry: this.headers.entrySet()){
+                con.setRequestProperty(entry.getKey(), this.headers.get(entry.getKey()));
             }
-
 
             if (payload != null) {
                 con.setDoOutput(true);
@@ -47,7 +45,6 @@ public class RequestExecutor implements Runnable {
                     byte[] input = this.payload.getBytes(StandardCharsets.UTF_8);
                     os.write(input, 0, input.length);
                 }
-
             }
 
 
