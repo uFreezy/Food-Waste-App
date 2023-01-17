@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/fragment_past_order_details"
     android:layout_width="400dp"
     android:layout_height="130dp"
-    android:paddingTop="15dp"
+    android:background="@drawable/border"
     android:gravity="center"
-    android:id="@+id/fragment_past_order_details"
-    tools:context=".PastOrderDetails"
-    android:background="@drawable/border">
+    android:orientation="vertical"
+    android:paddingTop="15dp"
+    tools:context=".PastOrderDetails">
 
     <TextView
         android:id="@+id/itemName"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="TextView" />
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/quantity"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="TextView" />
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/storeName"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="TextView" />
+        android:gravity="center" />
 </LinearLayout>

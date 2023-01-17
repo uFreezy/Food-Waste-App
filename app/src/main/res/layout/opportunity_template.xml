@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/opportunity_template"
     android:layout_width="410dp"
     android:layout_height="150dp"
@@ -12,23 +10,21 @@
         android:id="@+id/productName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="TextView" />
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:id="@+id/addedAgoTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="TextView" />
+        android:gravity="center" />
 
     <Button
         android:id="@+id/Reserve"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:text="Reserve" />
+        android:text="@string/reserve_btn" />
 
     <Button
         android:id="@+id/CancelReservation"
@@ -36,6 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:backgroundTint="@android:color/holo_orange_dark"
-        android:text="Remove Reservation"
+        android:text="@string/remove_reservation_btn"
         android:visibility="gone" />
 </LinearLayout>
