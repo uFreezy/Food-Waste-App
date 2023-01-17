@@ -27,12 +27,14 @@ public class DBManager extends SQLiteOpenHelper {
                     "  product_name TEXT NOT NULL, quantity NUMERIC NOT NULL, \n" +
                     "  is_available INTEGER NOT NULL, created_at STRING NOT NULL, \n" +
                     "  store_id INTEGER NOT NULL,\n" +
-                    "  user_id TEXT" +
+                    "  user_id TEXT \n " +
                     ");\n"};
 
     private static final String[] SQL_DELETE_ENTRIES = {
             "DROP TABLE IF EXISTS stores; \n",
             "DROP TABLE IF EXISTS opportunities;"};
+
+    private final SQLiteDatabase db = getWritableDatabase();
 
     public DBManager(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -40,6 +42,7 @@ public class DBManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         db.execSQL(TABLE_DEFINITIONS[0]);
         db.execSQL(TABLE_DEFINITIONS[1]);
 
@@ -61,10 +64,9 @@ public class DBManager extends SQLiteOpenHelper {
 
             String oppSql = "";
             for (int j = 0; j < 3; j++) {
-                oppSql = String.format("INSERT INTO opportunities (product_name, quantity, is_available, created_at, store_id) VALUES('%s',%s, 1,'%s', %s);", oppNames[randGen.nextInt(oppNames.length)], quant, createdAt, i+1);
+                oppSql = String.format("INSERT INTO opportunities (product_name, quantity, is_available, created_at, store_id) VALUES('%s',%s, 1,'%s', %s);", oppNames[randGen.nextInt(oppNames.length)], quant, createdAt, i + 1);
+                oppSqls.add(oppSql);
             }
-
-            oppSqls.add(oppSql);
         }
 
         for (String storeSql : storeSqls) {

@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Opportunity {
+
     private int id;
     private String productName;
     private boolean isAvailable;
@@ -12,21 +13,21 @@ public class Opportunity {
     private Date createdAt;
     private String userClaimedId;
 
-    public Opportunity(String productName, boolean isAvailable, int storeId, String createdAtStr, String userId) {
+    public Opportunity(int id, String productName, boolean isAvailable, int storeId, String createdAtStr) {
+        this.id = id;
         this.productName = productName;
         this.isAvailable = isAvailable;
         this.storeId = storeId;
         try {
             this.createdAt = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse(createdAtStr);
-        } catch (ParseException ex){
+        } catch (ParseException ex) {
             ex.printStackTrace();
         }
-
-        this.userClaimedId = userId;
     }
-    public Opportunity(int id, String productName, boolean isAvailable, int storeId, String createdAtStr, String userId) {
-        this(productName, isAvailable, storeId, createdAtStr, userId);
-        this.id = id;
+
+    public Opportunity(int id, String productName, boolean isAvailable, int storeId, String createdAtStr, String userClaimedId) {
+        this(id, productName, isAvailable, storeId, createdAtStr);
+        this.userClaimedId = userClaimedId;
     }
 
     public int getId() {
@@ -34,8 +35,9 @@ public class Opportunity {
     }
 
     public void setId(int id) {
-        this.id = id;
+        id = id;
     }
+
 
     public String getProductName() {
         return productName;
@@ -76,4 +78,5 @@ public class Opportunity {
     public void setUserClaimedId(String userClaimedId) {
         this.userClaimedId = userClaimedId;
     }
+
 }

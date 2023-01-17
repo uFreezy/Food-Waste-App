@@ -44,4 +44,7 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="edit_profile_label">Edit Profile</string>
     <string name="register_activity_label">Register</string>
+    <string name="title_activity_past_orders">PastOrders</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
