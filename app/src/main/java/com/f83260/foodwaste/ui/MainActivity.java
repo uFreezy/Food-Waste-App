@@ -48,9 +48,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -228,6 +232,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void renderStoreMarkers(List<Store> stores) {
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+
+        List<PointDrawer> taskList = new ArrayList<>();
+        for (Store store : stores) {
+            taskList.add(new PointDrawer(store, mGoogleMap));
+        }
+
+        try {
+            executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        executor.shutdown();
+
         for (Store store : stores) {
             LatLng storeLoc = new LatLng(store.getLatitude(), store.getLongitude());
 
@@ -305,5 +323,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
+    }
+}
+
+class PointDrawer implements Callable<Object> {
+    private final Store store;
+    private final GoogleMap map;
+
+    PointDrawer(Store store, GoogleMap mapReference) {
+        this.store = store;
+        this.map = mapReference;
+    }
+
+    @Override
+    public Object call() throws Exception {
+        LatLng storeLoc = new LatLng(store.getLatitude(), store.getLongitude());
+
+        MarkerOptions markerOptions2 = new MarkerOptions();
+        markerOptions2.position(storeLoc);
+        markerOptions2.title(store.getName());
+        markerOptions2.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        map.addMarker(markerOptions2);
+        return null;
     }
 }
