@@ -15,11 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.f83260.foodwaste.MainActivity;
-import com.f83260.foodwaste.R;
-import com.f83260.foodwaste.data.AuthDataSource;
-import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.databinding.ActivityRegisterBinding;
+import com.f83260.foodwaste.ui.MainActivity;
+import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.ui.login.LoggedInUserView;
 import com.f83260.foodwaste.ui.register.dto.RegistrationFromDto;
 

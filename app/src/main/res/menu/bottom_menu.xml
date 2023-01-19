@@ -3,11 +3,11 @@
 
     <item
         android:icon="@drawable/ic_baseline_home_24"
-        android:title="Home" />
+        android:title="@string/home_menu_text" />
     <item
         android:icon="@drawable/ic_baseline_shopping_cart_24"
-        android:title="Orders" />
+        android:title="@string/orders_menu_text" />
     <item
         android:icon="@drawable/ic_baseline_settings_24"
-        android:title="Settings" />
+        android:title="@string/settings_menu_text" />
 </menu>

@@ -44,4 +44,19 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="edit_profile_label">Edit Profile</string>
     <string name="register_activity_label">Register</string>
+    <string name="title_activity_past_orders">PastOrders</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cancel_btn_desc">Cancel</string>
+    <string name="save_profile_btn">Save Profile</string>
+    <string name="logout_btn">Logout</string>
+    <string name="first_name_field">First Name</string>
+    <string name="last_name_field">Last Name</string>
+    <string name="phone_hint">Phone</string>
+    <string name="remove_reservation_btn">Remove Reservation</string>
+    <string name="reserve_btn">Reserve</string>
+    <string name="register_btn">Register</string>
+    <string name="home_menu_text">Home</string>
+    <string name="orders_menu_text">Orders</string>
+    <string name="settings_menu_text">Settings</string>
 </resources>

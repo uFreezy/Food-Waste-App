@@ -16,7 +16,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.f83260.foodwaste.MainActivity;
+import com.f83260.foodwaste.ui.MainActivity;
 import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.databinding.ActivityLoginBinding;
 import com.f83260.foodwaste.service.UserService;
