@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationRequest mLocationRequest;
     private ActivityMainBinding binding;
     private FusedLocationProviderClient mFusedLocationClient;
-
     private StoreRepository storeRepository;
     private UserRepository userRepository;
 
@@ -98,8 +98,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
                     lp.copyFrom(dialog.getWindow().getAttributes());
 
+                    DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+                    float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
                     lp.width = WindowManager.LayoutParams.MATCH_PARENT;
                     lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+
+                    if (dpWidth > 800){
+                        lp.width = 800;
+                    }
 
                     dialog.show();
                     dialog.getWindow().setAttributes(lp);

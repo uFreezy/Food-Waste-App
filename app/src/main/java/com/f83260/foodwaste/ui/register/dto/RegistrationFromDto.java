@@ -25,8 +25,8 @@ public class RegistrationFromDto  extends UserProfileFormDto {
             this.setLastNameEditText(binding.registerForm.lastName);
             this.setPhoneNameEditText(binding.registerForm.phone);
         }
-        this.setUsernameEditText(binding.username);
-        this.setPasswordEditText(binding.password);
+        this.setUsernameEditText(binding.registerForm.username);
+        this.setPasswordEditText(binding.registerForm.password);
 
         this.registerButton  = binding.register;
         this.loadingProgressBar = binding.loading;

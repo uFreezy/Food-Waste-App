@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_past_order_details"
-    android:layout_width="400dp"
+    android:layout_width="match_parent"
     android:layout_height="130dp"
     android:background="@drawable/border"
     android:gravity="center"
