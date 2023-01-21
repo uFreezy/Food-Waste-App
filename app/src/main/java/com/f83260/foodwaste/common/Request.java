@@ -65,9 +65,7 @@ public class Request implements Runnable {
 
 
         } catch (Exception ex) {
-            // TODO: log failure
-
-            Exception ex2 = ex;
+            ex.printStackTrace();
             this.value = new JSONObject();
         }
 

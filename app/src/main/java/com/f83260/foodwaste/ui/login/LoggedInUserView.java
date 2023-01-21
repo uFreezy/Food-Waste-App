@@ -1,11 +1,8 @@
 package com.f83260.foodwaste.ui.login;
 
-/**
- * Class exposing authenticated user details to the UI.
- */
+
 public class LoggedInUserView {
-    private String displayName;
-    //... other data fields that may be accessible to the UI
+    private final String displayName;
 
     public LoggedInUserView(String displayName) {
         this.displayName = displayName;

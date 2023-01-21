@@ -1,5 +1,7 @@
 package com.f83260.foodwaste.data.model;
 
+import android.database.Cursor;
+
 import java.util.List;
 
 public class Store {

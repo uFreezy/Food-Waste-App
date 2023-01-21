@@ -128,7 +128,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void digestErrors(RegisterFormState formState, RegistrationFromDto form ){
-        // TODO: Add phone number
         if (formState.getFirstNameError() != null){
             form.getFirstNameEditText().setError(getString(formState.getFirstNameError()));
         }

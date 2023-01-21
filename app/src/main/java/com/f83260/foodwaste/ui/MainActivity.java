@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -26,7 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.data.AuthDataSource;
-import com.f83260.foodwaste.data.StoreRepository;
+import com.f83260.foodwaste.data.DataRepository;
 import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.model.Opportunity;
 import com.f83260.foodwaste.data.model.Store;
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationRequest mLocationRequest;
     private ActivityMainBinding binding;
     private FusedLocationProviderClient mFusedLocationClient;
-    private StoreRepository storeRepository;
+    private DataRepository dataRepository;
     private UserRepository userRepository;
 
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -72,45 +74,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (!locationList.isEmpty()) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                List<Store> stores = storeRepository.getStores();
+                List<Store> stores = dataRepository.getStores();
 
                 renderStoreMarkers(stores);
 
+                // When marker is clicked, prepare and display opportunities modal
                 mGoogleMap.setOnMarkerClickListener(marker -> {
                     // Open dialog window
                     final Dialog dialog = new Dialog(MainActivity.this);
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setCancelable(true);
 
-                    View layoutInf = getLayoutInflater().inflate(R.layout.store_dialog, null);
-                    ScrollView scrollView = layoutInf.findViewById(R.id.custom_dialog);
-
-                    LinearLayout layout = scrollView.findViewById(R.id.dialog_layout);
-
-                    layout.findViewById(R.id.btnCancel).setOnClickListener(l -> dialog.dismiss());
-
-                    Store store = storeRepository.getStoreByName(marker.getTitle());
-
-                    //R.id.storeName
-                    TextView storeNameLabel =  layout.findViewById(R.id.storeName);
-                    storeNameLabel.setText(store.getName());
-
-                    renderOpportunities(layout, store.getOpportunities());
-
-                    dialog.setContentView(scrollView);
-
-                    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-                    lp.copyFrom(dialog.getWindow().getAttributes());
-
-                    DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-                    float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-
-                    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-
-                    if (dpWidth > 800){
-                        lp.width = 800;
-                    }
+                    WindowManager.LayoutParams lp = initDialog(dialog, marker.getTitle());
 
                     dialog.show();
                     dialog.getWindow().setAttributes(lp);
@@ -127,12 +102,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
 
 
+    private WindowManager.LayoutParams initDialog(Dialog dialog, String markerTitle){
+        View layoutInf = getLayoutInflater().inflate(R.layout.store_dialog, null);
+        ScrollView scrollView = layoutInf.findViewById(R.id.custom_dialog);
+
+        LinearLayout layout = scrollView.findViewById(R.id.dialog_layout);
+
+        layout.findViewById(R.id.btnCancel).setOnClickListener(l -> dialog.dismiss());
+
+        Store store = dataRepository.getStoreByName(markerTitle);
+
+        //R.id.storeName
+        TextView storeNameLabel =  layout.findViewById(R.id.storeName);
+        storeNameLabel.setText(store.getName());
+
+        renderOpportunities(layout, store.getOpportunities());
+
+        dialog.setContentView(scrollView);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+
+        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        if (dpWidth > 800){
+            lp.width = 800;
+        }
+
+        return lp;
+    }
+
+
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        storeRepository = StoreRepository.getInstance(getApplicationContext());
+        dataRepository = DataRepository.getInstance(getApplicationContext());
         userRepository = UserRepository.getInstance(new AuthDataSource());
 
         if (!UserRepository.isLoggedIn()) {
@@ -173,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
@@ -284,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Listener for Reserve button
             oppLayout.findViewById(R.id.Reserve).setOnClickListener(l -> {
-                storeRepository.reserveOpportunity(opp, userRepository.loggedUser().getUserId());
+                dataRepository.reserveOpportunity(opp, userRepository.loggedUser().getUserId());
                 // Updates the UI with the new "Cancel" button
                 oppLayout.findViewById(R.id.Reserve).setVisibility(View.GONE);
                 oppLayout.findViewById(R.id.CancelReservation).setVisibility(View.VISIBLE);
@@ -293,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Listener for Cancel Reservation button
             oppLayout.findViewById(R.id.CancelReservation).setOnClickListener(l -> {
-                storeRepository.removeReservation(opp);
+                dataRepository.removeReservation(opp);
                 // Updates the UI with the new "Cancel" button
                 oppLayout.findViewById(R.id.Reserve).setVisibility(View.VISIBLE);
                 oppLayout.findViewById(R.id.CancelReservation).setVisibility(View.GONE);
@@ -336,7 +345,7 @@ class PointDrawer implements Callable<Object> {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         LatLng storeLoc = new LatLng(store.getLatitude(), store.getLongitude());
 
         MarkerOptions markerOptions2 = new MarkerOptions();

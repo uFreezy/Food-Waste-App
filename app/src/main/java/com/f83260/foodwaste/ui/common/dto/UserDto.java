@@ -9,14 +9,6 @@ public class UserDto {
     private String username;
     private String pass;
 
-    public UserDto(String firstName, String lastName, String phone, String username, String pass) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.username = username;
-        this.pass = pass;
-    }
-
     public UserDto(ProfileBinding userBinding){
         this.firstName = userBinding.firstName.getText().toString();
         this.lastName = userBinding.lastName.getText().toString();

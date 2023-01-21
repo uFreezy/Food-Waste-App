@@ -1,0 +1,1 @@
+INSERT INTO opportunities (product_name, quantity, is_available, created_at, store_id) VALUES('%s',%s, 1,'%s', %s);
