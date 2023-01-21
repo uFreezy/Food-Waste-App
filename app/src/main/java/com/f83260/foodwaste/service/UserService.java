@@ -1,6 +1,11 @@
 package com.f83260.foodwaste.service;
 
+
+import static com.f83260.foodwaste.service.COLUMNS.*;
+
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 
 import com.f83260.foodwaste.common.Request;
 import com.f83260.foodwaste.data.AuthDataSource;
@@ -17,6 +22,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+class COLUMNS {
+    static final String ID = "id";
+    static final String FIRST_NAME = "first_name";
+    static final String LAST_NAME = "last_name";
+    static final String PHONE = "phone_number";
+    static final String EMAIL = "email";
+
+    static final String SALT = "salt";
+
+    static final String HASH = "hash";
+}
+
 public class UserService {
 
     private static final String API_BASE_URL = "https://api.jsonbin.io/v3";
@@ -26,7 +43,10 @@ public class UserService {
     public static void seedUsers() {
         UserService service = new UserService();
 
-        if (service.fecthUsers() == null || service.fecthUsers().length() == 0) {
+        JSONArray users = service.fecthUsers();
+
+        assert users != null;
+        if (service.fecthUsers() == null || users.length() == 0) {
             service.register("ivan@abv.bg", "123456789", "Ivan", "Petrov", "0888180533");
             service.register("mariya@abv.bg", "987654321", "Mariya", "Dimitrova", "0888180533");
         }
@@ -35,11 +55,13 @@ public class UserService {
     public LoggedInUser login(String username, String password) throws InterruptedException, JSONException {
         JSONObject user = this.getUser(username);
 
-        byte[] salt = Base64.decode(user.getString("salt"), Base64.DEFAULT);
-        byte[] hash = Base64.decode(user.getString("hash"), Base64.DEFAULT);
+        assert user != null;
 
-        if (user != null && PasswordUtil.isExpectedPassword(password.toCharArray(), salt, hash)) {
-            return new LoggedInUser(user.getString("id"),user.getString("first_name"),user.getString("last_name"),user.getString("phone_number"), user.getString("email"));
+        byte[] salt = Base64.decode(user.getString(SALT), Base64.DEFAULT);
+        byte[] hash = Base64.decode(user.getString(HASH), Base64.DEFAULT);
+
+        if (PasswordUtil.isExpectedPassword(password.toCharArray(), salt, hash)) {
+            return new LoggedInUser(user.getString(ID),user.getString(FIRST_NAME),user.getString(LAST_NAME),user.getString(PHONE), user.getString(EMAIL));
 
         } else {
             return null;
@@ -56,7 +78,7 @@ public class UserService {
         try {
             // Simple, but inefficient
             for (int i = 0; i < users.length(); i++) {
-                if (users.getJSONObject(i).getString("email").equals(username)) {
+                if (users.getJSONObject(i).getString(EMAIL).equals(username)) {
                     return users.getJSONObject(i);
                 }
             }
@@ -72,9 +94,11 @@ public class UserService {
 
         JSONObject user = null;
 
+        assert users != null;
+
         // Simple, but inefficient
         for (int i = 0; i < users.length(); i++) {
-            if (users.getJSONObject(i).getString("email").equals(userDto.getUsername())) {
+            if (users.getJSONObject(i).getString(EMAIL).equals(userDto.getUsername())) {
                 user =  users.getJSONObject(i);
             }
         }
@@ -83,17 +107,17 @@ public class UserService {
             throw new IllegalArgumentException("user with username " + userDto.getUsername() + " doesn't exist.");
         }
 
-        user.put("first_name", userDto.getFirstName())
-                .put("last_name",userDto.getLastName())
-                .put("phone_number", userDto.getPhone());
+        user.put(FIRST_NAME, userDto.getFirstName())
+                .put(LAST_NAME,userDto.getLastName())
+                .put(PHONE, userDto.getPhone());
 
 
         if (!userDto.getPass().isEmpty()){
             byte[] salt = PasswordUtil.getNextSalt();
             byte[] hash = PasswordUtil.hash(userDto.getPass().toCharArray(), salt);
 
-            user.put("salt", Base64.encodeToString(salt, Base64.DEFAULT))
-                    .put("hash", Base64.encodeToString(hash, Base64.DEFAULT));
+            user.put(SALT, Base64.encodeToString(salt, Base64.DEFAULT))
+                    .put(HASH, Base64.encodeToString(hash, Base64.DEFAULT));
         }
 
         String payload = "";
@@ -104,7 +128,6 @@ public class UserService {
         headers.put("X-MASTER-KEY", API_KEY);
         Request executor = new Request(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
 
-        // TODO: Move this part in the executor itself
         Thread thread = new Thread(executor);
 
         thread.start();
@@ -115,7 +138,7 @@ public class UserService {
         }
 
         if (executor.getStatusCode() == 200){
-            LoggedInUser updatedUser = new LoggedInUser(user.getString("id"),user.getString("first_name"),user.getString("last_name"),user.getString("phone_number"), user.getString("email"));
+            LoggedInUser updatedUser = new LoggedInUser(user.getString(ID),user.getString(FIRST_NAME),user.getString(LAST_NAME),user.getString(PHONE), user.getString(EMAIL));
             UserRepository.getInstance(new AuthDataSource()).setLoggedInUser(updatedUser);
             return updatedUser;
 
@@ -125,7 +148,6 @@ public class UserService {
     }
 
     public boolean register(String email, String password, String firstName, String lastName, String phoneNumber) {
-        // TODO
         JSONArray users = this.fecthUsers();
 
         if (users == null) {
@@ -135,17 +157,17 @@ public class UserService {
         JSONObject newUser = null;
         try {
             newUser = new JSONObject()
-                    .put("id", UUID.randomUUID())
-                    .put("email", email)
-                    .put("first_name", firstName)
-                    .put("last_name", lastName)
-                    .put("phone_number", phoneNumber);
+                    .put(ID, UUID.randomUUID())
+                    .put(EMAIL, email)
+                    .put(FIRST_NAME, firstName)
+                    .put(LAST_NAME, lastName)
+                    .put(PHONE, phoneNumber);
 
             byte[] salt = PasswordUtil.getNextSalt();
             byte[] hash = PasswordUtil.hash(password.toCharArray(), salt);
 
-            newUser.put("salt", Base64.encodeToString(salt, Base64.DEFAULT))
-                    .put("hash", Base64.encodeToString(hash, Base64.DEFAULT));
+            newUser.put(SALT, Base64.encodeToString(salt, Base64.DEFAULT))
+                    .put(HASH, Base64.encodeToString(hash, Base64.DEFAULT));
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
@@ -164,7 +186,6 @@ public class UserService {
         headers.put("X-MASTER-KEY", API_KEY);
         Request executor = new Request(API_BASE_URL + LOGGED_USERS, "PUT", headers, payload);
 
-        // TODO: Move this part in the executor itself
         Thread thread = new Thread(executor);
 
         thread.start();
@@ -186,7 +207,7 @@ public class UserService {
         headers.put("X-MASTER-KEY", API_KEY);
         Request executor = new Request(API_BASE_URL + LOGGED_USERS, "GET", headers, null);
 
-        // TODO: Move this part in the executor itself
+
         Thread thread = new Thread(executor);
 
         thread.start();
@@ -197,7 +218,6 @@ public class UserService {
         }
         // returns the whole list of users
         JSONObject value = executor.getValue();
-
 
         try {
             users = value.getJSONObject("record").getJSONArray("users");
