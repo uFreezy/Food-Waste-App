@@ -69,8 +69,8 @@ public class DBManager extends SQLiteOpenHelper {
             Scanner sc = new Scanner(is);
             while (sc.hasNextLine()) {
                 String sql;
-                if (params != null)
-                    sql = String.format(sc.nextLine(), (Object) params);
+                if (params != null && params.length > 0)
+                    sql = String.format(sc.nextLine(),  params);
                 else
                     sql = sc.nextLine();
 
