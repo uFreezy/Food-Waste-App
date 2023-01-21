@@ -26,7 +26,7 @@ import androidx.core.content.ContextCompat;
 
 import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.data.AuthDataSource;
-import com.f83260.foodwaste.data.StoreRepository;
+import com.f83260.foodwaste.data.DataRepository;
 import com.f83260.foodwaste.data.UserRepository;
 import com.f83260.foodwaste.data.model.Opportunity;
 import com.f83260.foodwaste.data.model.Store;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationRequest mLocationRequest;
     private ActivityMainBinding binding;
     private FusedLocationProviderClient mFusedLocationClient;
-    private StoreRepository storeRepository;
+    private DataRepository dataRepository;
     private UserRepository userRepository;
 
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (!locationList.isEmpty()) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                List<Store> stores = storeRepository.getStores();
+                List<Store> stores = dataRepository.getStores();
 
                 renderStoreMarkers(stores);
 
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     layout.findViewById(R.id.btnCancel).setOnClickListener(l -> dialog.dismiss());
 
-                    Store store = storeRepository.getStoreByName(marker.getTitle());
+                    Store store = dataRepository.getStoreByName(marker.getTitle());
 
                     //R.id.storeName
                     TextView storeNameLabel =  layout.findViewById(R.id.storeName);
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        storeRepository = StoreRepository.getInstance(getApplicationContext());
+        dataRepository = DataRepository.getInstance(getApplicationContext());
         userRepository = UserRepository.getInstance(new AuthDataSource());
 
         if (!UserRepository.isLoggedIn()) {
@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Listener for Reserve button
             oppLayout.findViewById(R.id.Reserve).setOnClickListener(l -> {
-                storeRepository.reserveOpportunity(opp, userRepository.loggedUser().getUserId());
+                dataRepository.reserveOpportunity(opp, userRepository.loggedUser().getUserId());
                 // Updates the UI with the new "Cancel" button
                 oppLayout.findViewById(R.id.Reserve).setVisibility(View.GONE);
                 oppLayout.findViewById(R.id.CancelReservation).setVisibility(View.VISIBLE);
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Listener for Cancel Reservation button
             oppLayout.findViewById(R.id.CancelReservation).setOnClickListener(l -> {
-                storeRepository.removeReservation(opp);
+                dataRepository.removeReservation(opp);
                 // Updates the UI with the new "Cancel" button
                 oppLayout.findViewById(R.id.Reserve).setVisibility(View.VISIBLE);
                 oppLayout.findViewById(R.id.CancelReservation).setVisibility(View.GONE);

@@ -35,7 +35,7 @@ public class RegisterViewModel extends ViewModel {
 
     // TODO: use dto here
     public void register(String firstName, String lastName, String phoneName, String username, String password){
-        Result<LoggedInUser> result = userRepository.register(firstName, lastName, phoneName, username, password);
+        Result result = userRepository.register(firstName, lastName, phoneName, username, password);
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();

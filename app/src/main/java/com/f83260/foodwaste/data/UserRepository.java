@@ -11,7 +11,7 @@ public class UserRepository {
 
     private static volatile UserRepository instance;
 
-    private AuthDataSource dataSource;
+    private final AuthDataSource dataSource;
 
     // If user credentials will be cached in local storage, it is recommended it be encrypted
     // @see https://developer.android.com/training/articles/keystore
@@ -34,7 +34,7 @@ public class UserRepository {
         return instance.user != null;
     }
 
-    public LoggedInUser loggedUser(){
+    public LoggedInUser loggedUser() {
         return instance.user;
     }
 
@@ -48,17 +48,17 @@ public class UserRepository {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result<LoggedInUser> login(String username, String password) {
+    public Result login(String username, String password) {
         // handle login
-        Result<LoggedInUser> result = dataSource.login(username, password);
+        Result result = dataSource.login(username, password);
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
     }
 
-    public Result<LoggedInUser> register(String firstName, String lastName, String phoneName, String username, String password){
-        Result<LoggedInUser> user = dataSource.register(firstName, lastName, phoneName, username, password);
+    public Result register(String firstName, String lastName, String phoneName, String username, String password) {
+        Result user = dataSource.register(firstName, lastName, phoneName, username, password);
 
         if (user instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) user).getData());
@@ -67,7 +67,7 @@ public class UserRepository {
         return user;
     }
 
-    public Result<LoggedInUser> updateProfile(UserDto userDto){
+    public Result updateProfile(UserDto userDto) {
         return dataSource.editProfile(userDto);
     }
 }
