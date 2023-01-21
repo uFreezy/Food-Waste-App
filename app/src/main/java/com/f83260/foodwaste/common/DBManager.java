@@ -10,6 +10,7 @@ import com.f83260.foodwaste.R;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -22,7 +23,7 @@ public class DBManager extends SQLiteOpenHelper {
     private static final int STORE_COUNT = 50;
     private static final int OPPORTUNITIES_PER_STORE = 10;
     private final Context context;
-    private final Random rand = new Random();
+    private final Random rand = new SecureRandom();
 
     public DBManager(Context context) {
         super(context, DATABASE_NAME, null, 1);

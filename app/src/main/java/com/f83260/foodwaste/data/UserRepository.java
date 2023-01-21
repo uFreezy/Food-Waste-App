@@ -58,13 +58,13 @@ public class UserRepository {
     }
 
     public Result register(String firstName, String lastName, String phoneName, String username, String password) {
-        Result user = dataSource.register(firstName, lastName, phoneName, username, password);
+        Result newUser = dataSource.register(firstName, lastName, phoneName, username, password);
 
-        if (user instanceof Result.Success) {
-            setLoggedInUser(((Result.Success<LoggedInUser>) user).getData());
+        if (newUser instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) newUser).getData());
         }
 
-        return user;
+        return newUser;
     }
 
     public Result updateProfile(UserDto userDto) {

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Opportunity {
-    private final int id;
+    private int id;
     private String productName;
     private boolean isAvailable;
     private int storeId;
@@ -34,7 +34,7 @@ public class Opportunity {
     }
 
     public void setId(int id) {
-        id = id;
+        this.id = id;
     }
 
 
