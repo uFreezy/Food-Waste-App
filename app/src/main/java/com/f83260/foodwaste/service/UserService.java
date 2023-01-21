@@ -1,11 +1,9 @@
 package com.f83260.foodwaste.service;
 
 
-import static com.f83260.foodwaste.service.COLUMNS.*;
+import static com.f83260.foodwaste.service.Columns.*;
 
 import android.util.Base64;
-
-import androidx.annotation.NonNull;
 
 import com.f83260.foodwaste.common.Request;
 import com.f83260.foodwaste.data.AuthDataSource;
@@ -22,20 +20,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-class COLUMNS {
+class Columns {
     static final String ID = "id";
     static final String FIRST_NAME = "first_name";
     static final String LAST_NAME = "last_name";
     static final String PHONE = "phone_number";
     static final String EMAIL = "email";
-
     static final String SALT = "salt";
-
     static final String HASH = "hash";
+
+    private Columns(){
+    }
 }
 
 public class UserService {
-
     private static final String API_BASE_URL = "https://api.jsonbin.io/v3";
     private static final String API_KEY = "$2b$10$Vl72g5hPKSe53zEGDI3GhO6CeXJ2WP/vK2vKwnvaq1u3D8jve/T/u";
     private static final String LOGGED_USERS = "/b/635fa63365b57a31e6a81495";
@@ -52,7 +50,7 @@ public class UserService {
         }
     }
 
-    public LoggedInUser login(String username, String password) throws InterruptedException, JSONException {
+    public LoggedInUser login(String username, String password) throws JSONException {
         JSONObject user = this.getUser(username);
 
         assert user != null;
@@ -135,6 +133,7 @@ public class UserService {
             thread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
         if (executor.getStatusCode() == 200){
@@ -193,6 +192,7 @@ public class UserService {
             thread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
         return executor.getStatusCode() == 200;
 
@@ -215,6 +215,7 @@ public class UserService {
             thread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
         // returns the whole list of users
         JSONObject value = executor.getValue();

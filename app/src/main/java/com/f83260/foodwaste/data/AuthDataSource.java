@@ -22,6 +22,8 @@ public class AuthDataSource {
             LoggedInUser user = userService.login(username, password);
             return new Result.Success<>(user);
         } catch (Exception e) {
+            if (e.getClass().equals(InterruptedException.class))
+                Thread.currentThread().interrupt();
             return new Result.Error(new IOException("Error logging in", e));
         }
     }
@@ -34,6 +36,8 @@ public class AuthDataSource {
             userService.register(username, password, firstName, lastName, phoneName);
             return new Result.Success<>(userService.login(username, password));
         } catch (Exception e) {
+            if (e.getClass().equals(InterruptedException.class))
+                Thread.currentThread().interrupt();
             return new Result.Error(new IOException("Error registering in", e));
         }
     }

@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             executor.invokeAll(taskList);
         } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
         executor.shutdown();
