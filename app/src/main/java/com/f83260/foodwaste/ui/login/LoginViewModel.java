@@ -13,9 +13,9 @@ import com.f83260.foodwaste.data.model.LoggedInUser;
 
 public class LoginViewModel extends ViewModel {
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private UserRepository loginRepository;
+    private final MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
+    private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private final UserRepository loginRepository;
 
     LoginViewModel(UserRepository loginRepository) {
         this.loginRepository = loginRepository;

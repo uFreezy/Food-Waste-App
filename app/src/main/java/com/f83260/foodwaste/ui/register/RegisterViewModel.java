@@ -15,10 +15,9 @@ import com.f83260.foodwaste.ui.register.dto.RegistrationFromDto;
 
 
 public class RegisterViewModel extends ViewModel {
-
-    private MutableLiveData<RegisterFormState> registerFormState = new MutableLiveData<>();
-    private MutableLiveData<RegisterResult> registerResult = new MutableLiveData<>();
-    private UserRepository userRepository;
+    private final MutableLiveData<RegisterFormState> registerFormState = new MutableLiveData<>();
+    private final MutableLiveData<RegisterResult> registerResult = new MutableLiveData<>();
+    private final UserRepository userRepository;
 
     RegisterViewModel(UserRepository loginRepository) {
         this.userRepository = loginRepository;
@@ -32,8 +31,6 @@ public class RegisterViewModel extends ViewModel {
         return registerResult;
     }
 
-
-    // TODO: use dto here
     public void register(String firstName, String lastName, String phoneName, String username, String password){
         Result result = userRepository.register(firstName, lastName, phoneName, username, password);
 

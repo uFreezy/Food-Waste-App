@@ -1,4 +1,4 @@
-package com.f83260.foodwaste;
+package com.f83260.foodwaste.ui.orders;
 
 import static androidx.databinding.DataBindingUtil.setContentView;
 
@@ -11,13 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.f83260.foodwaste.databinding.ActivityMainBinding;
+import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.databinding.FragmentPastOrderDetailsBinding;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,9 +23,6 @@ public class PastOrderDetails extends Fragment {
     private static final String ITEM_NAME = "itemName";
     private static final String QUANTITY = "quantity";
     private static final String STORE_NAME = "storeName";
-
-    private FragmentPastOrderDetailsBinding binding;
-
 
     public PastOrderDetails() {
         // Required empty public constructor
@@ -48,7 +40,7 @@ public class PastOrderDetails extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = FragmentPastOrderDetailsBinding.inflate(getLayoutInflater());
+        FragmentPastOrderDetailsBinding.inflate(getLayoutInflater());
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -76,41 +78,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 renderStoreMarkers(stores);
 
+                // When marker is clicked, prepare and display opportunities modal
                 mGoogleMap.setOnMarkerClickListener(marker -> {
                     // Open dialog window
                     final Dialog dialog = new Dialog(MainActivity.this);
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setCancelable(true);
 
-                    View layoutInf = getLayoutInflater().inflate(R.layout.store_dialog, null);
-                    ScrollView scrollView = layoutInf.findViewById(R.id.custom_dialog);
-
-                    LinearLayout layout = scrollView.findViewById(R.id.dialog_layout);
-
-                    layout.findViewById(R.id.btnCancel).setOnClickListener(l -> dialog.dismiss());
-
-                    Store store = dataRepository.getStoreByName(marker.getTitle());
-
-                    //R.id.storeName
-                    TextView storeNameLabel =  layout.findViewById(R.id.storeName);
-                    storeNameLabel.setText(store.getName());
-
-                    renderOpportunities(layout, store.getOpportunities());
-
-                    dialog.setContentView(scrollView);
-
-                    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-                    lp.copyFrom(dialog.getWindow().getAttributes());
-
-                    DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-                    float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-
-                    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-
-                    if (dpWidth > 800){
-                        lp.width = 800;
-                    }
+                    WindowManager.LayoutParams lp = initDialog(dialog, marker.getTitle());
 
                     dialog.show();
                     dialog.getWindow().setAttributes(lp);
@@ -125,6 +100,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
+
+
+    private WindowManager.LayoutParams initDialog(Dialog dialog, String markerTitle){
+        View layoutInf = getLayoutInflater().inflate(R.layout.store_dialog, null);
+        ScrollView scrollView = layoutInf.findViewById(R.id.custom_dialog);
+
+        LinearLayout layout = scrollView.findViewById(R.id.dialog_layout);
+
+        layout.findViewById(R.id.btnCancel).setOnClickListener(l -> dialog.dismiss());
+
+        Store store = dataRepository.getStoreByName(markerTitle);
+
+        //R.id.storeName
+        TextView storeNameLabel =  layout.findViewById(R.id.storeName);
+        storeNameLabel.setText(store.getName());
+
+        renderOpportunities(layout, store.getOpportunities());
+
+        dialog.setContentView(scrollView);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+
+        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        if (dpWidth > 800){
+            lp.width = 800;
+        }
+
+        return lp;
+    }
 
 
     @SuppressLint("MissingPermission")
@@ -173,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
@@ -336,7 +345,7 @@ class PointDrawer implements Callable<Object> {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         LatLng storeLoc = new LatLng(store.getLatitude(), store.getLongitude());
 
         MarkerOptions markerOptions2 = new MarkerOptions();

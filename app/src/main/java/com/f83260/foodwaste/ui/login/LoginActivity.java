@@ -60,8 +60,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-        // TODO: BUG - When you enter wrong credentials it still redirects to main activity
         loginViewModel.getLoginResult().observe(this, loginResult -> {
             if (loginResult == null) {
                 return;

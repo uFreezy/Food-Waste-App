@@ -12,19 +12,11 @@ public class RegistrationFromDto  extends UserProfileFormDto {
     private Button registerButton;
     private ProgressBar loadingProgressBar;
 
-    public RegistrationFromDto(EditText firstNameEditText, EditText lastNameEditText, EditText phoneNameEditText, EditText usernameEditText, EditText passwordEditText, Button registerButton, ProgressBar loadingProgressBar) {
-        super(firstNameEditText, lastNameEditText, phoneNameEditText, usernameEditText, passwordEditText);
-        this.registerButton = registerButton;
-        this.loadingProgressBar = loadingProgressBar;
-    }
-
     public RegistrationFromDto(ActivityRegisterBinding binding){
         super();
-        if (binding.registerForm != null){
-            this.setFirstNameEditText(binding.registerForm.firstName);
-            this.setLastNameEditText(binding.registerForm.lastName);
-            this.setPhoneNameEditText(binding.registerForm.phone);
-        }
+        this.setFirstNameEditText(binding.registerForm.firstName);
+        this.setLastNameEditText(binding.registerForm.lastName);
+        this.setPhoneNameEditText(binding.registerForm.phone);
         this.setUsernameEditText(binding.registerForm.username);
         this.setPasswordEditText(binding.registerForm.password);
 

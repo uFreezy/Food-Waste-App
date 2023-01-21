@@ -10,9 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.NavUtils;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.ui.AppBarConfiguration;
 
-import com.f83260.foodwaste.PastOrderDetails;
 import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.data.AuthDataSource;
 import com.f83260.foodwaste.data.DataRepository;
@@ -24,8 +22,6 @@ import com.f83260.foodwaste.databinding.ActivityPastOrdersBinding;
 import java.util.List;
 
 public class PastOrdersActivity extends AppCompatActivity {
-
-    private AppBarConfiguration appBarConfiguration;
     private ActivityPastOrdersBinding binding;
 
     private DataRepository dataRepository;

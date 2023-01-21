@@ -19,15 +19,6 @@ public class RegisterFormState {
     private Integer passwordError;
     private boolean isDataValid;
 
-    RegisterFormState(@Nullable Integer firstNameError,@Nullable Integer lastNameError,@Nullable Integer phoneError, @Nullable Integer usernameError, @Nullable Integer passwordError) {
-        this.firstNameError = firstNameError;
-        this.lastNameError = lastNameError;
-        this.phoneError = phoneError;
-        this.usernameError = usernameError;
-        this.passwordError = passwordError;
-        this.isDataValid = false;
-    }
-
     RegisterFormState(boolean isDataValid) {
         this.firstNameError = null;
         this.lastNameError = null;

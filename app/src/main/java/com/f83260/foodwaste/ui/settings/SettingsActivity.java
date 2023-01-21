@@ -21,7 +21,6 @@ import com.f83260.foodwaste.ui.login.LoginActivity;
 import com.f83260.foodwaste.ui.settings.dto.EditProfileFormDto;
 
 public class SettingsActivity extends AppCompatActivity {
-
     private SettingsActivityBinding binding;
 
     @Override
