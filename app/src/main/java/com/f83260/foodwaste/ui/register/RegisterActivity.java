@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.f83260.foodwaste.common.NetworkUtils;
 import com.f83260.foodwaste.databinding.ActivityRegisterBinding;
 import com.f83260.foodwaste.ui.MainActivity;
 import com.f83260.foodwaste.R;
@@ -42,6 +43,8 @@ public class RegisterActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        if (!NetworkUtils.checkConnection(getApplication()))
+            Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_LONG).show();
 
         registerViewModel.getRegisterFormState().observe(this, registerFormState -> {
             if (registerFormState == null) {

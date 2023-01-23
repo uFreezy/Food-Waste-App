@@ -16,6 +16,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.f83260.foodwaste.common.NetworkUtils;
 import com.f83260.foodwaste.ui.MainActivity;
 import com.f83260.foodwaste.R;
 import com.f83260.foodwaste.databinding.ActivityLoginBinding;
@@ -36,7 +37,12 @@ public class LoginActivity extends AppCompatActivity {
 
         // seed users
         // this is debugging code
-        UserService.seedUsers();
+        if (NetworkUtils.checkConnection(getApplication()))
+            UserService.seedUsers();
+        else
+            Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_LONG).show();
+
+
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
@@ -107,6 +113,11 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginButton.setOnClickListener(v -> {
+            if (!NetworkUtils.checkConnection(getApplication())){
+                Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_LONG).show();
+                return;
+            }
+
             loadingProgressBar.setVisibility(View.VISIBLE);
             loginViewModel.login(usernameEditText.getText().toString(),
                     passwordEditText.getText().toString());
@@ -130,6 +141,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_LONG).show();
     }
 }
