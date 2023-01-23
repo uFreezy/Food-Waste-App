@@ -153,17 +153,6 @@ public class UserService {
             users = new JSONArray();
         }
 
-        // check for existing user with that email.
-        try {
-            for (int i = 0; i < users.length(); i++) {
-                if (users.getJSONObject(i).get(EMAIL).equals(email))
-                    return false;
-            }
-        } catch (JSONException ex){
-            ex.printStackTrace();
-        }
-
-
         JSONObject newUser = null;
         try {
             newUser = new JSONObject()

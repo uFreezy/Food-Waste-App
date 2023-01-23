@@ -38,7 +38,7 @@ public class RegisterViewModel extends ViewModel {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
             registerResult.setValue(new RegisterResult(new LoggedInUserView(data.getDisplayName())));
         } else {
-            registerResult.setValue(new RegisterResult(R.string.login_failed));
+            registerResult.setValue(new RegisterResult(R.string.register_failed));
         }
     }
 

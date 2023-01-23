@@ -35,14 +35,15 @@ public class AuthDataSource {
     public Result register(String firstName, String lastName, String phoneName, String username, String password) {
         try {
             if (userService.checkIfUsernameExists(username))
-                return new Result.Error(new IOException("User with username " + username + "already exits."));
-            userService.register(username, password, firstName, lastName, phoneName);
-            return new Result.Success<>(userService.login(username, password));
+                return new Result.Error(new UserRegistrationFailed("User with username " + username + "already exits."));
+            if (userService.register(username, password, firstName, lastName, phoneName))
+                return new Result.Success<>(userService.login(username, password));
         } catch (Exception e) {
             if (e.getClass().equals(InterruptedException.class))
                 Thread.currentThread().interrupt();
-            return new Result.Error(new IOException("Error registering in", e));
+            return new Result.Error(new UserRegistrationFailed("Error registering in", e));
         }
+        return new Result.Error(new UserRegistrationFailed("Error registering in."));
     }
 
     public Result editProfile(UserDto userDto) {
@@ -64,5 +65,14 @@ public class AuthDataSource {
 class WrongCredentialsException extends Exception{
     public WrongCredentialsException(String msg){
         super(msg);
+    }
+}
+
+class UserRegistrationFailed extends Exception{
+    public UserRegistrationFailed(String msg){
+        super(msg);
+    }
+    public UserRegistrationFailed(String msg, Exception e){
+        super(msg, e);
     }
 }
