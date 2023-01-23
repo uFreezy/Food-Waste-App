@@ -43,8 +43,8 @@ public class UserService {
 
         JSONArray users = service.fecthUsers();
 
-        assert users != null;
-        if (service.fecthUsers() == null || users.length() == 0) {
+
+        if (users.length() == 0) {
             service.register("ivan@abv.bg", "123456789", "Ivan", "Petrov", "0888180533");
             service.register("mariya@abv.bg", "987654321", "Mariya", "Dimitrova", "0888180533");
         }
@@ -224,7 +224,10 @@ public class UserService {
             e.printStackTrace();
         }
 
-        return users;
+        if (users == null)
+            return new JSONArray();
+        else
+            return users;
     }
 
 }
