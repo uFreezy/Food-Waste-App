@@ -20,12 +20,15 @@ public class AuthDataSource {
         // X-MASTER-KEY $2b$10$Vl72g5hPKSe53zEGDI3GhO6CeXJ2WP/vK2vKwnvaq1u3D8jve/T/u
         try {
             LoggedInUser user = userService.login(username, password);
-            return new Result.Success<>(user);
+            if (user != null)
+                return new Result.Success<>(user);
         } catch (Exception e) {
             if (e.getClass().equals(InterruptedException.class))
                 Thread.currentThread().interrupt();
             return new Result.Error(new IOException("Error logging in", e));
         }
+
+        return new Result.Error(new WrongCredentialsException("Wrong username or password."));
     }
 
 
@@ -56,5 +59,10 @@ public class AuthDataSource {
         }
 
         return new Result.Success(updatedUser);
+    }
+}
+class WrongCredentialsException extends Exception{
+    public WrongCredentialsException(String msg){
+        super(msg);
     }
 }
