@@ -20,26 +20,30 @@ public class AuthDataSource {
         // X-MASTER-KEY $2b$10$Vl72g5hPKSe53zEGDI3GhO6CeXJ2WP/vK2vKwnvaq1u3D8jve/T/u
         try {
             LoggedInUser user = userService.login(username, password);
-            return new Result.Success<>(user);
+            if (user != null)
+                return new Result.Success<>(user);
         } catch (Exception e) {
             if (e.getClass().equals(InterruptedException.class))
                 Thread.currentThread().interrupt();
             return new Result.Error(new IOException("Error logging in", e));
         }
+
+        return new Result.Error(new WrongCredentialsException("Wrong username or password."));
     }
 
 
     public Result register(String firstName, String lastName, String phoneName, String username, String password) {
         try {
             if (userService.checkIfUsernameExists(username))
-                return new Result.Error(new IOException("User with username " + username + "already exits."));
-            userService.register(username, password, firstName, lastName, phoneName);
-            return new Result.Success<>(userService.login(username, password));
+                return new Result.Error(new UserRegistrationFailed("User with username " + username + "already exits."));
+            if (userService.register(username, password, firstName, lastName, phoneName))
+                return new Result.Success<>(userService.login(username, password));
         } catch (Exception e) {
             if (e.getClass().equals(InterruptedException.class))
                 Thread.currentThread().interrupt();
-            return new Result.Error(new IOException("Error registering in", e));
+            return new Result.Error(new UserRegistrationFailed("Error registering in", e));
         }
+        return new Result.Error(new UserRegistrationFailed("Error registering in."));
     }
 
     public Result editProfile(UserDto userDto) {
@@ -56,5 +60,19 @@ public class AuthDataSource {
         }
 
         return new Result.Success(updatedUser);
+    }
+}
+class WrongCredentialsException extends Exception{
+    public WrongCredentialsException(String msg){
+        super(msg);
+    }
+}
+
+class UserRegistrationFailed extends Exception{
+    public UserRegistrationFailed(String msg){
+        super(msg);
+    }
+    public UserRegistrationFailed(String msg, Exception e){
+        super(msg, e);
     }
 }

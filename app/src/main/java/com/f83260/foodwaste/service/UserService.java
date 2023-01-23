@@ -53,7 +53,7 @@ public class UserService {
     public LoggedInUser login(String username, String password) throws JSONException {
         JSONObject user = this.getUser(username);
 
-        assert user != null;
+        if (user == null) return null;
 
         byte[] salt = Base64.decode(user.getString(SALT), Base64.DEFAULT);
         byte[] hash = Base64.decode(user.getString(HASH), Base64.DEFAULT);
@@ -195,8 +195,6 @@ public class UserService {
             Thread.currentThread().interrupt();
         }
         return executor.getStatusCode() == 200;
-
-
     }
 
     private JSONArray fecthUsers() {

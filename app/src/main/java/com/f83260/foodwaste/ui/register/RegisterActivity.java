@@ -61,14 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
 
             if (registerResult.getError() != null) {
                 showRegisterFailed(registerResult.getError());
-            }
-            if (registerResult.getSuccess() != null) {
+            }else if (registerResult.getSuccess() != null) {
                 updateUiWithUser(registerResult.getSuccess());
-            }
-            setResult(Activity.RESULT_OK);
 
-            //Complete and destroy register activity once successful
-            finish();
+                setResult(Activity.RESULT_OK);
+
+                //Complete and destroy register activity once successful
+                finish();
+            }
         });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
