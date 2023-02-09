@@ -47,7 +47,6 @@ public class Request implements Runnable {
                 }
             }
 
-
             con.connect();
 
             BufferedReader in = new BufferedReader(
@@ -59,17 +58,12 @@ public class Request implements Runnable {
             }
             in.close();
 
-
             this.value = new JSONObject(content.toString());
             this.statusCode = con.getResponseCode();
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
             this.value = new JSONObject();
         }
-
-
     }
 
     public JSONObject getValue() {

@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             View layoutInf2 = getLayoutInflater().inflate(R.layout.opportunity_template, null);
             LinearLayout oppLayout = layoutInf2.findViewById(R.id.opportunity_template);
 
-            TextView productName = oppLayout.findViewById(R.id.productName);
+            TextView productName =  oppLayout.findViewById(R.id.productName);
             TextView addedAgoTime = oppLayout.findViewById(R.id.addedAgoTime);
             productName.setText(opp.getProductName());
 
